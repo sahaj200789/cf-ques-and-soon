@@ -1,0 +1,107 @@
+#include <iostream> // brute force approach with o(n2) tc not optimize but good approach
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <cmath>
+#include <numeric>
+using namespace std;
+ 
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+ 
+    int t;
+    cin>>t;
+
+    while(t--){
+        long long n,k;
+        cin>>n>>k;
+
+        string s;
+        cin>>s;
+
+        // FIXED: Changed type layout to match your usage later: vec[i].first (count), vec[i].second (char)
+        vector<pair<long long, char>>vec;
+
+        long long count=1;
+        for(int i=0;i<n-1;i++){
+            if(s[i]==s[i+1]){
+                count++;
+            }else{
+                vec.push_back({count,s[i]}); // FIXED: Pushed 'count' instead of hardcoded 2
+                count=1;
+            }
+        }
+        vec.push_back({count,s[n-1]});
+
+        // We track the absolute minimum changes needed across all blocks here
+        long long max_b=k; 
+
+        // FIXED: Wrap your logic in a loop over 'pos' to evaluate every 'B' block as a potential starting point
+        for(long long pos=0; pos<vec.size(); pos++) {
+            if(vec[pos].second != 'B') continue;
+
+            long long max_b_current = vec[pos].first;
+            count = 0; // Reusing 'count' to track 'W' changes for this block
+
+            if(max_b_current >= k) {
+                max_b = 0;
+                break;
+            }
+
+            int st=pos-1;
+            int end=pos+1;
+
+            // FIXED: Using vec.size() instead of n to prevent out-of-bounds crashes
+            while(max_b_current < k && (st>=0 || end<vec.size())){
+                long long take_left = 0, take_right = 0;
+
+                if (st >= 0) {
+                    take_left = vec[st].first;
+                    if (max_b_current + take_left > k) {
+                        take_left = k - max_b_current;
+                    }
+                }
+
+                if (end < vec.size() && max_b_current + take_left < k) {
+                    take_right = vec[end].first;
+                    if (max_b_current + take_left + take_right > k) {
+                        take_right = k - (max_b_current + take_left);
+                    }
+                }
+
+                if(st>=0){
+                    if(vec[st].second=='W'){
+                        count += take_left;
+                    }
+                    max_b_current += take_left;
+                    st--;
+                }
+                if(end<vec.size()){
+                    if(vec[end].second=='W'){
+                        count += take_right;
+                    }
+                    max_b_current += take_right;
+                    end++;
+                }
+            }
+
+            if (max_b_current >= k) {
+                max_b = min(max_b, count);
+            }
+        }
+
+        // Handle edge case where there are no 'B's in the string at all
+        bool check = false;
+        for(int i=0; i<n; i++) if(s[i] == 'B') check = true;
+
+        if(!check) {
+            cout << k;
+        } else {
+            cout << max_b;
+        }
+
+        cout<<"\n";
+    }
+    return 0;
+}
