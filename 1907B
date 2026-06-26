@@ -1,0 +1,60 @@
+#include <iostream> // backword loop thinkingimp
+#include <string>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+
+
+    int t;
+    cin>>t;
+
+    while(t--){
+        string s;
+        cin>>s;
+
+        long long count=0;
+        long long count_B=0;
+
+        for(int i=s.size()-1;i>=0;i--){
+            if(s[i]=='b'){
+                count++;
+                s[i]=' ';
+                
+            }
+            else if(s[i]=='B'){
+                count_B++;
+                s[i]=' ';
+                
+            }else{
+                if(count>0){
+                    if(islower(s[i])){
+                        s[i]= ' ';
+                        count--;
+                        
+                    }
+                } 
+                if(count_B>0){
+                    if(isupper(s[i])){
+                        s[i]=' ';
+                        count_B--;
+                        
+                    }
+                }
+            }
+            
+
+        }
+
+        for(int i=0;i<s.size();i++){
+            if(s[i]!=' '){
+                cout<<s[i];
+            }
+        }
+        cout<<endl;
+    }
+    return 0;
+} 
