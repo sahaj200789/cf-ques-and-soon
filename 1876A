@@ -1,0 +1,70 @@
+// nice qeus not too complicated but good
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+
+    int t;
+    if (cin >> t) {
+        while (t--) {
+            long long n, p; // Handle large variables safely with long long
+            cin >> n >> p;
+
+            vector<long long> a(n);
+            vector<long long> b(n);
+            for (int i = 0; i < n; i++) cin >> a[i];
+            for (int i = 0; i < n; i++) cin >> b[i];
+
+            // Chief sabse pehle 1 bande ko notify karega cost 'p' par
+            long long cost = p;
+            long long resident_left = n - 1;
+
+            vector<pair<long long, long long>> vec(n);
+            for (int i = 0; i < n; i++) {
+                vec[i].first = a[i];
+                vec[i].second = b[i];
+            }
+
+            //  Custom sort (Aapka banaya hua perfect logic)
+            sort(vec.begin(), vec.end(), [](const pair<long long, long long>& c, const pair<long long, long long>& d) {
+                if (c.second != d.second) {
+                    return c.second < d.second; 
+                }
+                return c.first > d.first;       
+            });
+
+            // Greedy tarike se bache hue residents ko notify karein
+            for (int i = 0; i < n; i++) {
+                if (resident_left == 0) {
+                    break;
+                }
+
+                // Agar is bande ka sharing cost Chief ke cost 'p' se zyada ya barabar hai,
+                // toh aage kisi bande se share karwane ka fayda nahi hai.
+                if (vec[i].second >= p) {
+                    break;
+                }
+
+                // Yeh resident max kitne logo ko share kar sakta hai bache hue logo me se?
+                long long can_share = min(vec[i].first, resident_left);
+                
+                cost += can_share * vec[i].second; // Only pay the sharing cost, NO '+ p' here
+                resident_left -= can_share;
+            }
+
+            // Agar abhi bhi log bache hain, toh Chief unhe directly handle karega
+            if (resident_left > 0) {
+                cost += resident_left * p;
+            }
+
+            cout << cost << "\n";
+        }
+    }
+    return 0;
+}
